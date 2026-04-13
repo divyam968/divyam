@@ -1,0 +1,114 @@
+<html>
+<body style="font-family: Arial; padding: 20px; background:#0f0f0f; color:white;">
+
+<h2>🔥 AI Resume Analyzer</h2>
+
+<input type="file" id="resumeUpload" />
+<button id="analyzeBtn">Analyze Resume</button>
+
+<h3 id="result"></h3>
+
+<script>
+
+// 🔥 JOB OPEN FUNCTION
+function openJob(role) {
+  const query = encodeURIComponent(role);
+
+  window.open(`https://www.linkedin.com/jobs/search/?keywords=${query}&location=India`, "_blank");
+  window.open(`https://www.naukri.com/${role.replace(/\s+/g, "-")}-jobs`, "_blank");
+  window.open(`https://www.indeed.com/jobs?q=${query}&l=India`, "_blank");
+}
+
+// 🔥 MAIN ANALYZE FUNCTION
+async function analyze() {
+
+  const file = document.getElementById("resumeUpload").files[0];
+
+  if (!file) {
+    alert("Upload resume first");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("resume", file);
+
+  document.getElementById("result").innerText = "Analyzing... ⏳";
+
+  try {
+    const res = await fetch("http://localhost:3000/analyze", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await res.json();
+
+    // 🔥 FORMAT
+    let formatted = data.result
+      .replace(/\*\*(.*?)\*\*/g, "<h3 style='color:#00ffcc'>$1</h3>")
+      .replace(/\n/g, "<br>")
+      .replace(/\*/g, "• ");
+
+    // 🎯 SCORE HIGHLIGHT
+    formatted = formatted.replace(
+      /Score:\s*(\d+)/,
+      "<h2 style='color:lime'>Score: $1</h2>"
+    );
+
+    // 📦 EXTRACT ROLES
+    let roles = [];
+    const lines = data.result.split("\n");
+
+    lines.forEach(line => {
+      if (line.toLowerCase().includes("match")) {
+
+        let role = line.split("- Match")[0];
+        role = role.replace("-", "").trim();
+
+        if (role) roles.push(role);
+      }
+    });
+
+    console.log("ROLES:", roles);
+
+    // 🔥 BUTTONS CREATE
+    let jobLinks = `<h3 style="color:#00ffcc">🚀 Apply Jobs</h3>`;
+
+    roles.forEach(role => {
+      jobLinks += `
+      <div style="margin-top:10px">
+        <b>${role}</b><br>
+        <button onclick="openJob('${role}')"
+          style="margin-top:5px;padding:8px 15px;border:none;border-radius:6px;background:#00ffcc;cursor:pointer;">
+          Apply Jobs
+        </button>
+      </div>
+      `;
+    });
+
+    // 💎 FINAL UI
+    document.getElementById("result").innerHTML = `
+      <div style="
+        background: linear-gradient(135deg, #1e1e1e, #111);
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(0,255,200,0.2);
+      ">
+        ${formatted}
+        <br><br>
+        ${jobLinks}
+      </div>
+    `;
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById("result").innerText = "Error connecting backend ❌";
+  }
+}
+
+// 🔥 BUTTON CONNECT
+document.getElementById("analyzeBtn").addEventListener("click", analyze);
+
+</script>
+
+</body>
+</html>
