@@ -35,7 +35,7 @@ async function analyze() {
   document.getElementById("result").innerText = "Analyzing... ⏳";
 
   try {
-    const res = await fetch("http://localhost:3000/analyze", {
+    const res = await fetch("/analyze", {
       method: "POST",
       body: formData
     });
