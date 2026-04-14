@@ -113,6 +113,31 @@ button:hover {
   transition: width 1s ease-in-out;
 }
 
+.circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: conic-gradient(#00ffcc 0deg, #222 0deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inner {
+  width: 90px;
+  height: 90px;
+  background: #111;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#circleScore {
+  color: #00ffcc;
+  font-weight: bold;
+  font-size: 18px;
+}
 
 </style>
 </head>
@@ -138,46 +163,58 @@ button:hover {
 <script>
 
 // 🔥 JOB OPEN FUNCTION
-function openJob(role) {
+function openJob(role, site) {
   const query = encodeURIComponent(role);
 
-  window.open(`https://www.linkedin.com/jobs/search/?keywords=${query}&location=India`, "_blank");
-  window.open(`https://www.naukri.com/${role.replace(/\s+/g, "-")}-jobs`, "_blank");
-  window.open(`https://www.indeed.com/jobs?q=${query}&l=India`, "_blank");
-}
+  let url = "";
 
-// 🔥 MAIN ANALYZE FUNCTION
+  if (site === "linkedin") {
+    url = `https://www.linkedin.com/jobs/search/?keywords=${query}&location=India`;
+  } 
+  else if (site === "naukri") {
+    url = `https://www.naukri.com/${role.replace(/\s+/g, "-")}-jobs`;
+  } 
+  else if (site === "indeed") {
+    url = `https://www.indeed.com/jobs?q=${query}&l=India`;
+  }
+
+  window.open(url, "_blank");
+}
+  // 🔥 MAIN ANALYZE FUNCTION
 async function analyze() {
 
+  // 🔥 LOADING UI
+  document.getElementById("result").innerHTML = `
+    <div style="text-align:center;">
+      <p style="color:#00ffcc;">Analyzing Resume... ⏳</p>
+      <div style="
+        width:100%;
+        background:#222;
+        border-radius:10px;
+        overflow:hidden;
+        margin-top:10px;
+      ">
+        <div id="loadingBar" style="
+          width:0%;
+          height:10px;
+          background:#00ffcc;
+          transition: width 1s ease;
+        "></div>
+      </div>
+    </div>
+  `;
 
-document.getElementById("result").innerHTML = `
-<div style="text-align:center;">
-  <p style="color:#00ffcc;">Analyzing Resume... ⏳</p>
-  <div style="
-    width:100%;
-    background:#222;
-    border-radius:10px;
-    overflow:hidden;
-    margin-top:10px;
-  ">
-    <div id="loadingBar" style="
-      width:0%;
-      height:10px;
-      background:#00ffcc;
-      transition: width 1s ease;
-    "></div>
-  </div>
-</div>
-`;
+  // 🔄 loading animation
+  let progress = 0;
+  let interval = setInterval(() => {
+    progress += 10;
+    document.getElementById("loadingBar").style.width = progress + "%";
 
-let progress = 0;
-let interval = setInterval(() => {
-  progress += 10;
-  document.getElementById("loadingBar").style.width = progress + "%";
+    if (progress >= 90) clearInterval(interval);
+  }, 300);
 
-  if (progress >= 90) clearInterval(interval);
-}, 300);
 
+  // 📂 FILE CHECK
   const file = document.getElementById("resumeUpload").files[0];
 
   if (!file) {
@@ -188,7 +225,7 @@ let interval = setInterval(() => {
   const formData = new FormData();
   formData.append("resume", file);
 
-   try {
+  try {
     const res = await fetch("/analyze", {
       method: "POST",
       body: formData
@@ -202,60 +239,66 @@ let interval = setInterval(() => {
       .replace(/\n/g, "<br>")
       .replace(/\*/g, "• ");
 
+    // 🎯 SCORE
+    let scoreMatch = data.result.match(/Score:\s*(\d+)/);
+    let score = scoreMatch ? parseInt(scoreMatch[1]) : 0;
 
-// 🎯 EXTRACT SCORE
-let scoreMatch = data.result.match(/Score:\s*(\d+)/);
-let score = scoreMatch ? parseInt(scoreMatch[1]) : 0;
+    // 📊 CIRCULAR BAR
+    let circularBar = `
+      <div style="display:flex;justify-content:center;margin:20px 0;">
+        <div class="circle">
+          <div class="inner">
+            <span id="circleScore">0%</span>
+          </div>
+        </div>
+      </div>
+    `;
 
-// 💥 CREATE PROGRESS BAR
-let progressBar = `
-<div class="progress-container">
-  <div class="progress-bar">
-    <div class="progress-fill" id="progressFill">${score}%</div>
-  </div>
-</div>
-`;
-
-    // 🎯 SCORE HIGHLIGHT
-    formatted = formatted.replace(
-      /Score:\s*(\d+)/,
-      "<h2 style='color:lime'>Score: $1</h2>"
-    );
-
-    // 📦 EXTRACT ROLES
+    // 🎯 ROLES
     let roles = [];
     const lines = data.result.split("\n");
 
     lines.forEach(line => {
       if (line.toLowerCase().includes("match")) {
-
         let role = line.split("- Match")[0];
         role = role.replace("-", "").trim();
-
         if (role) roles.push(role);
       }
     });
 
-    console.log("ROLES:", roles);
-
-    // 🔥 BUTTONS CREATE
+    // 🔥 JOB BUTTONS
     let jobLinks = `<h3 style="color:#00ffcc">🚀 Apply Jobs</h3>`;
 
     roles.forEach(role => {
-      jobLinks += `
-      <div style="margin-top:10px">
-        <b>${role}</b><br>
-        <button onclick="openJob('${role}')"
-          style="margin-top:5px;padding:8px 15px;border:none;border-radius:6px;background:#00ffcc;cursor:pointer;">
-          Apply Jobs
-        </button>
-      </div>
-      `;
+            jobLinks += `
+<div style="margin-top:10px">
+  <b>${role}</b><br>
+
+  <div style="margin-top:8px; display:flex; gap:10px; flex-wrap:wrap;">
+
+    <button onclick="openJob('${role}', 'linkedin')"
+    style="padding:6px 10px;border:none;border-radius:6px;background:#0077b5;color:white;cursor:pointer;">
+    LinkedIn
+    </button>
+
+    <button onclick="openJob('${role}', 'naukri')"
+    style="padding:6px 10px;border:none;border-radius:6px;background:#ff6a00;color:white;cursor:pointer;">
+    Naukri
+    </button>
+
+    <button onclick="openJob('${role}', 'indeed')"
+    style="padding:6px 10px;border:none;border-radius:6px;background:#2557a7;color:white;cursor:pointer;">
+    Indeed
+    </button>
+
+  </div>
+</div>
+`;
     });
 
-
-clearInterval(interval);
-document.getElementById("loadingBar").style.width = "100%";
+    // ✅ STOP LOADING
+    clearInterval(interval);
+    document.getElementById("loadingBar").style.width = "100%";
 
     // 💎 FINAL UI
     document.getElementById("result").innerHTML = `
@@ -266,26 +309,40 @@ document.getElementById("loadingBar").style.width = "100%";
         box-shadow: 0 0 20px rgba(0,255,200,0.2);
       ">
         ${formatted}
-   <br>
-   ${progressBar}
-   <br>
-   ${jobLinks}     
- </div>
+        <br>
+        ${circularBar}
+        <br>
+        ${jobLinks}
+      </div>
     `;
 
+    // 🔥 CIRCLE ANIMATION (CORRECT PLACE)
+   setTimeout(() => {
+  let circle = document.querySelector(".circle");
+  let text = document.getElementById("circleScore");
+
+  let deg = score * 3.6;
+
+  // 🔥 COLOR LOGIC ADD YAHAN
+  let color = "#00ffcc";
+
+  if (score < 40) color = "red";
+  else if (score < 70) color = "yellow";
+  else color = "#00ffcc";
+
+  if (circle && text) {
+    circle.style.background = `conic-gradient(${color} ${deg}deg, #222 ${deg}deg)`;
+    text.innerText = score + "%";
+    text.style.color = color;
+  }
+}, 300);
+
+ 
   } catch (err) {
     console.error(err);
     document.getElementById("result").innerText = "Error connecting backend ❌";
   }
 }
-
-setTimeout(() => {
-  let bar = document.getElementById("progressFill");
-  if (bar) {
-    bar.style.width = score + "%";
-  }
-}, 200);
-
 // 🔥 BUTTON CONNECT
 document.getElementById("analyzeBtn").addEventListener("click", analyze);
 
