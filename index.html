@@ -1,12 +1,139 @@
+<!DOCTYPE html>
 <html>
-<body style="font-family: Arial; padding: 20px; background:#0f0f0f; color:white;">
+<head>
+<title>AI Resume Analyzer</title>
 
-<h2>🔥 AI Resume Analyzer</h2>
+<style>
 
-<input type="file" id="resumeUpload" />
-<button id="analyzeBtn">Analyze Resume</button>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  color: white;
+}
 
-<h3 id="result"></h3>
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* CARD */
+.card {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(15px);
+  padding: 40px;
+  border-radius: 20px;
+  width: 420px;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0,255,200,0.2);
+}
+
+/* TITLE */
+h1 {
+  margin-bottom: 10px;
+  color: #00ffcc;
+}
+
+p {
+  font-size: 14px;
+  color: #ccc;
+}
+
+/* FILE INPUT */
+input[type="file"] {
+  margin-top: 20px;
+  padding: 10px;
+  background: #111;
+  color: white;
+  border-radius: 8px;
+  border: none;
+}
+
+/* BUTTON */
+button {
+  margin-top: 20px;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #00ffcc, #00ccaa);
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px #00ffcc;
+}
+
+/* RESULT CARD */
+#result {
+  margin-top: 25px;
+  text-align: left;
+  background: rgba(0,0,0,0.4);
+  padding: 15px;
+  border-radius: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* JOB BUTTONS */
+#result button {
+  margin-top: 8px;
+  padding: 6px 12px;
+  background: #00ffcc;
+  color: black;
+  border-radius: 6px;
+}
+
+/* PROGRESS BAR */
+.progress-container {
+  margin-top: 15px;
+}
+
+.progress-bar {
+  width: 100%;
+  background: #222;
+  border-radius: 10px;
+  overflow: hidden;
+  height: 20px;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00ffcc, #00ccaa);
+  text-align: center;
+  color: black;
+  font-weight: bold;
+  line-height: 20px;
+  transition: width 1s ease-in-out;
+}
+
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="card">
+
+    <h1>🚀 AI Resume Analyzer</h1>
+    <p>Upload your resume and get AI-powered job insights</p>
+
+    <input type="file" id="resumeUpload" />
+
+    <br>
+    <button id="analyzeBtn">Analyze Resume</button>
+
+    <div id="result"></div>
+
+  </div>
+</div>
 
 <script>
 
@@ -22,6 +149,35 @@ function openJob(role) {
 // 🔥 MAIN ANALYZE FUNCTION
 async function analyze() {
 
+
+document.getElementById("result").innerHTML = `
+<div style="text-align:center;">
+  <p style="color:#00ffcc;">Analyzing Resume... ⏳</p>
+  <div style="
+    width:100%;
+    background:#222;
+    border-radius:10px;
+    overflow:hidden;
+    margin-top:10px;
+  ">
+    <div id="loadingBar" style="
+      width:0%;
+      height:10px;
+      background:#00ffcc;
+      transition: width 1s ease;
+    "></div>
+  </div>
+</div>
+`;
+
+let progress = 0;
+let interval = setInterval(() => {
+  progress += 10;
+  document.getElementById("loadingBar").style.width = progress + "%";
+
+  if (progress >= 90) clearInterval(interval);
+}, 300);
+
   const file = document.getElementById("resumeUpload").files[0];
 
   if (!file) {
@@ -32,9 +188,7 @@ async function analyze() {
   const formData = new FormData();
   formData.append("resume", file);
 
-  document.getElementById("result").innerText = "Analyzing... ⏳";
-
-  try {
+   try {
     const res = await fetch("/analyze", {
       method: "POST",
       body: formData
@@ -47,6 +201,20 @@ async function analyze() {
       .replace(/\*\*(.*?)\*\*/g, "<h3 style='color:#00ffcc'>$1</h3>")
       .replace(/\n/g, "<br>")
       .replace(/\*/g, "• ");
+
+
+// 🎯 EXTRACT SCORE
+let scoreMatch = data.result.match(/Score:\s*(\d+)/);
+let score = scoreMatch ? parseInt(scoreMatch[1]) : 0;
+
+// 💥 CREATE PROGRESS BAR
+let progressBar = `
+<div class="progress-container">
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill">${score}%</div>
+  </div>
+</div>
+`;
 
     // 🎯 SCORE HIGHLIGHT
     formatted = formatted.replace(
@@ -85,6 +253,10 @@ async function analyze() {
       `;
     });
 
+
+clearInterval(interval);
+document.getElementById("loadingBar").style.width = "100%";
+
     // 💎 FINAL UI
     document.getElementById("result").innerHTML = `
       <div style="
@@ -94,9 +266,11 @@ async function analyze() {
         box-shadow: 0 0 20px rgba(0,255,200,0.2);
       ">
         ${formatted}
-        <br><br>
-        ${jobLinks}
-      </div>
+   <br>
+   ${progressBar}
+   <br>
+   ${jobLinks}     
+ </div>
     `;
 
   } catch (err) {
@@ -104,6 +278,13 @@ async function analyze() {
     document.getElementById("result").innerText = "Error connecting backend ❌";
   }
 }
+
+setTimeout(() => {
+  let bar = document.getElementById("progressFill");
+  if (bar) {
+    bar.style.width = score + "%";
+  }
+}, 200);
 
 // 🔥 BUTTON CONNECT
 document.getElementById("analyzeBtn").addEventListener("click", analyze);
