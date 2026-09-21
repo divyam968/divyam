@@ -4,6 +4,7 @@ A collection of LeetCode questions to ace the coding interview! - Created using 
 ## Array
 |  |
 | ------- |
+| [0016-3sum-closest](https://github.com/divyam968/divyam/tree/master/0016-3sum-closest) |
 | [0078-subsets](https://github.com/divyam968/divyam/tree/master/0078-subsets) |
 ## Backtracking
 |  |
@@ -25,4 +26,12 @@ A collection of LeetCode questions to ace the coding interview! - Created using 
 |  |
 | ------- |
 | [0043-multiply-strings](https://github.com/divyam968/divyam/tree/master/0043-multiply-strings) |
+## Two Pointers
+|  |
+| ------- |
+| [0016-3sum-closest](https://github.com/divyam968/divyam/tree/master/0016-3sum-closest) |
+## Sorting
+|  |
+| ------- |
+| [0016-3sum-closest](https://github.com/divyam968/divyam/tree/master/0016-3sum-closest) |
 <!---LeetCode Topics End-->
