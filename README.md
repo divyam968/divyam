@@ -30,8 +30,22 @@ A collection of LeetCode questions to ace the coding interview! - Created using 
 |  |
 | ------- |
 | [0016-3sum-closest](https://github.com/divyam968/divyam/tree/master/0016-3sum-closest) |
+| [0148-sort-list](https://github.com/divyam968/divyam/tree/master/0148-sort-list) |
 ## Sorting
 |  |
 | ------- |
 | [0016-3sum-closest](https://github.com/divyam968/divyam/tree/master/0016-3sum-closest) |
+| [0148-sort-list](https://github.com/divyam968/divyam/tree/master/0148-sort-list) |
+## Linked List
+|  |
+| ------- |
+| [0148-sort-list](https://github.com/divyam968/divyam/tree/master/0148-sort-list) |
+## Divide and Conquer
+|  |
+| ------- |
+| [0148-sort-list](https://github.com/divyam968/divyam/tree/master/0148-sort-list) |
+## Merge Sort
+|  |
+| ------- |
+| [0148-sort-list](https://github.com/divyam968/divyam/tree/master/0148-sort-list) |
 <!---LeetCode Topics End-->
