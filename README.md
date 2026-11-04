@@ -22,6 +22,7 @@ A collection of LeetCode questions to ace the coding interview! - Created using 
 ## String
 |  |
 | ------- |
+| [0005-longest-palindromic-substring](https://github.com/divyam968/divyam/tree/master/0005-longest-palindromic-substring) |
 | [0020-valid-parentheses](https://github.com/divyam968/divyam/tree/master/0020-valid-parentheses) |
 | [0043-multiply-strings](https://github.com/divyam968/divyam/tree/master/0043-multiply-strings) |
 ## Simulation
@@ -31,6 +32,7 @@ A collection of LeetCode questions to ace the coding interview! - Created using 
 ## Two Pointers
 |  |
 | ------- |
+| [0005-longest-palindromic-substring](https://github.com/divyam968/divyam/tree/master/0005-longest-palindromic-substring) |
 | [0016-3sum-closest](https://github.com/divyam968/divyam/tree/master/0016-3sum-closest) |
 | [0148-sort-list](https://github.com/divyam968/divyam/tree/master/0148-sort-list) |
 ## Sorting
@@ -67,4 +69,12 @@ A collection of LeetCode questions to ace the coding interview! - Created using 
 | [0182-duplicate-emails](https://github.com/divyam968/divyam/tree/master/0182-duplicate-emails) |
 | [0183-customers-who-never-order](https://github.com/divyam968/divyam/tree/master/0183-customers-who-never-order) |
 | [0184-department-highest-salary](https://github.com/divyam968/divyam/tree/master/0184-department-highest-salary) |
+## Dynamic Programming
+|  |
+| ------- |
+| [0005-longest-palindromic-substring](https://github.com/divyam968/divyam/tree/master/0005-longest-palindromic-substring) |
+## Manacher
+|  |
+| ------- |
+| [0005-longest-palindromic-substring](https://github.com/divyam968/divyam/tree/master/0005-longest-palindromic-substring) |
 <!---LeetCode Topics End-->
